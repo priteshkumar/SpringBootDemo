@@ -1,7 +1,9 @@
 package com.mavixk.SpringBootDemo;
 
+import com.mavixk.SpringBootDemo.dao.CityDao;
 import com.mavixk.SpringBootDemo.dao.CustomerDao;
 import com.mavixk.SpringBootDemo.dao.TheatreDao;
+import com.mavixk.SpringBootDemo.entity.City;
 import com.mavixk.SpringBootDemo.entity.Customer;
 import com.mavixk.SpringBootDemo.entity.Theatre;
 import java.math.BigDecimal;
@@ -43,20 +45,43 @@ public class MovieApp {
     customerRec = customerDao.findById(customerRec.getCustomerId());
     System.out.println(customerRec);
 
-    //use TheatreDao jparepo
+    testCityDao(applicationContext);
+    testTheatreDao(applicationContext);
+  }
+
+  public static void testCityDao(ApplicationContext applicationContext) {
+    CityDao cityDao = applicationContext.getBean(CityDao.class);
+
+    City c1 = new City();
+    c1.setCityName("copenhagen");
+    City savedCity = cityDao.save(c1);
+    System.out.println(savedCity.getCityName());
+  }
+
+  public static void testTheatreDao(ApplicationContext applicationContext) {
+
+    //use TheatreDao jparepo/CityDao
+    CityDao cityDao = applicationContext.getBean(CityDao.class);
+    City c = cityDao.findByCityName("copenhagen").get(0);
+
     TheatreDao theatreDao = applicationContext.getBean(TheatreDao.class);
 
     Theatre theatre1 = new Theatre();
     theatre1.setTheatreName("a1");
     theatre1.setTicketPrice(BigDecimal.valueOf(240.2));
 
+    //set city for many-to-one mapping
+    theatre1.setCity(c);
+
     Theatre theatre2 = new Theatre();
     theatre2.setTheatreName("a2");
     theatre2.setTicketPrice(BigDecimal.valueOf(320.12));
+    theatre2.setCity(c);
 
     Theatre theatre3 = new Theatre();
     theatre3.setTheatreName("a3");
     theatre3.setTicketPrice(BigDecimal.valueOf(210.40));
+    theatre3.setCity(c);
 
     List<Theatre> theatreList = new LinkedList<>();
     theatreList.add(theatre1);
@@ -67,12 +92,13 @@ public class MovieApp {
       System.out.println(theatre.getTheatreName());
     }
 
-    //findByTheatreName
+    //findByTheatreName/City
     theatreDao.findByTheatreNameContaining("a")
-        .forEach(theatre -> System.out.println(theatre.getTheatreName()));
+        .forEach(theatre -> System.out
+            .println(theatre.getTheatreName() + " " + theatre.getCity().getCityName()));
 
     //use Pageable
-    Page<Theatre> theatrePage = theatreDao.findAll(PageRequest.of(0,2));
+    Page<Theatre> theatrePage = theatreDao.findAll(PageRequest.of(0, 2));
     System.out.println("#####printing theatre page 0");
     theatrePage.forEach(theatre -> System.out.println(theatre.getTheatreName()));
 
