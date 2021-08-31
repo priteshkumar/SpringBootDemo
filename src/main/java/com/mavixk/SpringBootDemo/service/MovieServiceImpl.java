@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MovieServiceImpl implements MovieService{
@@ -20,6 +22,7 @@ public class MovieServiceImpl implements MovieService{
   }
 
   @Override
+  @Transactional(propagation = Propagation.REQUIRED)
   public Movie acceptMovieDetails(Movie movie) {
     return this.movieDao.save(movie);
   }
@@ -30,6 +33,7 @@ public class MovieServiceImpl implements MovieService{
   }
 
   @Override
+  @Transactional(propagation = Propagation.REQUIRED)
   public Movie updateMovieDetails(int id, Movie movie) {
 
     Movie  m = this.movieDao.findById(id).orElse(null);
