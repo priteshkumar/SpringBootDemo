@@ -7,7 +7,9 @@ import com.mavixk.SpringBootDemo.dao.TheatreDao;
 import com.mavixk.SpringBootDemo.entity.City;
 import com.mavixk.SpringBootDemo.entity.Customer;
 import com.mavixk.SpringBootDemo.entity.Theatre;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -32,7 +34,7 @@ public class MovieApp {
 
   private static Logger logger = LoggerFactory.getLogger(MovieApp.class);
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws UnsupportedEncodingException {
     ApplicationContext applicationContext = SpringApplication.run(MovieApp.class, args);
 
     CustomerDao customerDao = applicationContext.getBean(CustomerDao.class);
@@ -67,14 +69,15 @@ public class MovieApp {
     testMovies();
   }
 
-  public static void testMovies() {
+  public static void testMovies() throws UnsupportedEncodingException {
 
     String omdbUrl = "http://www.omdbapi.com/";
     Map<String, String> res = new HashMap<>();
     res.put("t", "inception");
     RestTemplate restTemplate = new RestTemplate();
     UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(omdbUrl)
-        .queryParam("apikey", "4d37a725").queryParam("t", "inception");
+        .queryParam("apikey", "4d37a725").queryParam("t",
+            URLEncoder.encode("the matrix", "UTF-8"));
     System.out.println(uriComponentsBuilder.toUriString());
     logger.debug("use resttemplate exchange method");
     ResponseEntity<String> responseEntity = restTemplate
